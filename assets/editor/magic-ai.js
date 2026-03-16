@@ -21,7 +21,7 @@
       if (addedModel && elementor.selection) {
         elementor.selection.select(addedModel);
       }
-    } catch (e) {}
+    } catch (e) { }
 
     return addedModel;
   }
@@ -33,7 +33,7 @@
         elementor.notifications.showToast({ message, type });
         return;
       }
-    } catch (e) {}
+    } catch (e) { }
     if (type === "error") {
       window.alert(message);
     }
@@ -41,43 +41,38 @@
 
   function addSectionNearElement(sectionJson, elementId) {
     // Best-effort: insert near the generator widget.
-    // If we can't, fallback to elementor.addSection default insertion.
+    // MUST be inserted at the root level, NOT as a child widget sibling.
+    let topLevelId = null;
+    try {
+      if (elementId && elementor && elementor.documents && elementor.documents.getCurrent) {
+        const doc = elementor.documents.getCurrent();
+        if (doc && typeof doc.getElementsById === "function") {
+          let model = doc.getElementsById(elementId);
+          while (model && model.get("parent")) {
+            let parent = model.get("parent");
+            let parentType = parent.get("elType") || parent.get("type");
+            if (parentType === "document" || parentType === "root" || !parentType) {
+              topLevelId = model.get("id");
+              break;
+            }
+            model = parent;
+          }
+        }
+      }
+    } catch (e) { }
+
     // Prefer Elementor command stack (undo-friendly) if available.
     try {
       if (elementor && elementor.commands && typeof elementor.commands.run === "function") {
         elementor.commands.run("document/elements/create", {
           model: sectionJson,
-          options: elementId ? { at: "after", targetId: elementId } : {},
+          options: topLevelId ? { at: "after", targetId: topLevelId } : {},
         });
         return true;
       }
-    } catch (e) {}
+    } catch (e) { }
 
-    try {
-      if (
-        elementId &&
-        elementor.documents &&
-        elementor.documents.getCurrent &&
-        elementor.documents.getCurrent()
-      ) {
-        const doc = elementor.documents.getCurrent();
-        if (doc && typeof doc.getElementsById === "function") {
-          const model = doc.getElementsById(elementId);
-          if (model && typeof model.get === "function") {
-            const parent = model.get("parent");
-            if (parent && typeof parent.get === "function") {
-              const siblings = parent.get("elements");
-              const index = siblings && siblings.indexOf ? siblings.indexOf(model) : -1;
-              if (siblings && typeof siblings.add === "function") {
-                // Add after the widget element within the same parent container.
-                siblings.add(sectionJson, { at: index >= 0 ? index + 1 : undefined });
-                return true;
-              }
-            }
-          }
-        }
-      }
-    } catch (e) {}
+    // Fallback
     elementor.addSection(sectionJson);
     return true;
   }
@@ -162,40 +157,47 @@
   }
 
   function bindWidgetButtons() {
-    // The main editor document
+    // 1. The main editor document (handles clicks if widget is somehow in the main doc)
     $(document).on("click", ".boylar-magic-ai-widget .boylar-magic-ai-generate", function (e) {
       e.preventDefault();
       const $root = $(this).closest(".boylar-magic-ai-widget");
       generateFromWidget($root);
     });
 
-    // We must bind to the iframe explicitly because elements are rendered inside it.
-    // Use elementor.channels.editor or window.elementor.hooks for better reliability
+    // 2. Elementor hooks (when a specific widget is opened)
     if (window.elementor && window.elementor.hooks) {
-        window.elementor.hooks.addAction('panel/open_editor/widget/boylar_magic_ai_generator', function( panel, model, view ) {
-            // Re-bind just in case, or bind directly to the preview contents if available
-            bindIframeEvents();
-        });
+      window.elementor.hooks.addAction('panel/open_editor/widget/boylar_magic_ai_generator', function (panel, model, view) {
+        bindIframeEvents();
+      });
     }
 
-    // Try an immediate bind as well
+    // 3. Listen to preview iframe loads/reloads
+    if (window.elementor) {
+      window.elementor.on("preview:loaded", bindIframeEvents);
+      window.elementor.on("document:loaded", bindIframeEvents);
+    }
+
+    // 4. Try an immediate bind as well
     bindIframeEvents();
+
+    // 5. Fallback: occasionally check and bind if the iframe body was replaced
+    setInterval(bindIframeEvents, 3000);
   }
 
   function bindIframeEvents() {
-      try {
-        if (elementor && elementor.$previewContents) {
-            // Unbind first to prevent multiple firings
-            elementor.$previewContents.find('body').off("click.boylarMagic")
-                                     .on("click.boylarMagic", ".boylar-magic-ai-widget .boylar-magic-ai-generate", function (e) {
-                e.preventDefault();
-                const $root = $(this).closest(".boylar-magic-ai-widget");
-                generateFromWidget($root);
-            });
-        }
-      } catch (e) {
-          console.error("Boylar Magic Elementor: Failed to bind iframe events", e);
+    try {
+      if (elementor && elementor.$previewContents) {
+        // Unbind first to prevent multiple firings
+        elementor.$previewContents.find('body').off("click.boylarMagic")
+          .on("click.boylarMagic", ".boylar-magic-ai-widget .boylar-magic-ai-generate", function (e) {
+            e.preventDefault();
+            const $root = $(this).closest(".boylar-magic-ai-widget");
+            generateFromWidget($root);
+          });
       }
+    } catch (e) {
+      console.error("Boylar Magic Elementor: Failed to bind iframe events", e);
+    }
   }
 
   function removeElementByIdBestEffort(elementId) {
@@ -206,7 +208,7 @@
         elementor.commands.run("document/elements/delete", { id: elementId });
         return true;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     try {
       if (elementor.documents && elementor.documents.getCurrent) {
@@ -227,7 +229,7 @@
           }
         }
       }
-    } catch (e) {}
+    } catch (e) { }
 
     try {
       if (elementor.elements && elementor.elements.models) {
@@ -237,7 +239,7 @@
           return true;
         }
       }
-    } catch (e) {}
+    } catch (e) { }
 
     return false;
   }

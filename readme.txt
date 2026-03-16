@@ -4,7 +4,7 @@ Tags: elementor, ai, generator, openai, page builder
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ When you click **Generate Section**, your prompt (and optional reference image) 
 
 Do not include sensitive personal data in prompts or screenshots.
 
-This plugin lets the site owner configure the provider endpoint (default is OpenAI). You are responsible for ensuring your use complies with your provider’s terms and privacy policy.
+This plugin lets the site owner configure the provider endpoint (defaults to Google's 100% Free Gemini API). You are responsible for ensuring your use complies with your provider’s terms and privacy policy.
 
 ### Cost & abuse controls
 Site owners can configure rate limiting and short-term caching to reduce costs and prevent repeated requests.
@@ -34,15 +34,15 @@ Editors do not need any external signup or login. The site owner configures an A
 
 ### AI Provider
 This plugin supports **OpenAI-compatible** Chat Completions endpoints. You can use:
-- OpenAI (default)
+- Google Gemini (Default - 100% Free API available via Google AI Studio)
+- OpenAI
 - Any compatible gateway/provider
-- A self-hosted OpenAI-compatible server (no per-request API fees, but you run the compute)
 
 == Installation ==
 
 1. Upload the `boylar-magic-elementor` folder to `/wp-content/plugins/`
-2. Activate **Boylar magic Elementor** from **Plugins**
-3. Go to **Settings → Boylar magic Elementor** and configure:
+2. Activate **Boylar Magic Elementor** from **Plugins**
+3. Go to **Boylar Magic Elementor** (top level menu) and configure:
    - API Base URL
    - API Key
    - Auth header
@@ -61,7 +61,7 @@ This plugin supports **OpenAI-compatible** Chat Completions endpoints. You can u
 == Frequently Asked Questions ==
 
 = Is it free? =
-The plugin is free. AI providers are typically paid services. You can point the plugin at a self-hosted OpenAI-compatible endpoint if you want “no per-request API fees”, but you still pay for hosting/compute.
+Yes! The plugin defaults to the **Google Gemini API**, which has a robust 100% free tier. Just sign up at Google AI Studio to get your key. You can also point the plugin to paid providers like OpenAI if you prefer.
 
 = Do my editors need to register or log in anywhere? =
 No external registration. Only users who can edit in Elementor (logged-in WordPress users) can generate sections.
@@ -79,6 +79,12 @@ In WordPress options (Settings page). For best security you can define `BOYLAR_O
 3. Generated section inserted and fully editable
 
 == Changelog ==
+
+= 0.2.0 =
+* Changed default AI to Google Gemini (100% free tier).
+* Moved configuration out of Settings into its own top-level menu.
+* Fixed a core issue where the "Generate" button wouldn't respond reliably inside the Elementor iframe.
+* Fixed a rendering issue where generated Elementor sections were missing required IDs and DOM nesting.
 
 = 0.1.0 =
 * Initial release: Elementor widget + editor injection + OpenAI-compatible provider support + settings page.

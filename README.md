@@ -13,11 +13,11 @@ Elementor addon that generates **fully editable Elementor sections** (native wid
 2. Activate **Boylar magic Elementor**
 
 ### Configure AI provider
-Go to **WP Admin → Settings → Boylar magic Elementor**:
-- **API Base URL**: an *OpenAI-compatible* endpoint (defaults to OpenAI)
-- **API Key**: required for hosted providers
-- **Auth header**: choose `Authorization: Bearer` or `x-api-key` depending on your provider
-- **Model (text)** and **Model (vision)**: defaults are `gpt-4o-mini` and `gpt-4o`
+Go to **WP Admin → Boylar Magic Elementor**:
+- **API Base URL**: An *OpenAI-compatible* endpoint (defaults to Google's free Gemini API: `https://generativelanguage.googleapis.com/v1beta/openai/`)
+- **API Key**: Required. Get a **100% Free** Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+- **Auth header**: Choose `Authorization: Bearer` (Default for Gemini/OpenAI).
+- **Model (text)** and **Model (vision)**: Defaults are `gemini-2.5-flash` for both text and vision.
 - **Auto-remove generator widget**: enabled by default
 - **Cache TTL**: caches repeated prompts briefly to reduce costs
 - **Rate limit**: limits requests per user per minute
@@ -64,11 +64,9 @@ This plugin uses an **OpenAI Chat Completions compatible** endpoint:
 You can point **API Base URL** to any compatible service or a self-hosted gateway.
 
 ## “Is there an absolutely free API?”
-There is **no reliable “forever free” hosted API** for quality generative output at scale.
+Yes! By default, this plugin is now configured to use the **Google Gemini API**, which offers a robust **100% free tier** that easily handles Elementor generation via their OpenAI-compatible endpoint.
 
-Your practical options:
-- **Hosted providers** (paid): easiest and fastest to set up.
-- **Self-hosted (local) models** (no per-request fees): you run your own server (e.g., an OpenAI-compatible gateway). This is “free” in API cost, but not free in compute.
+You just need to sign in with a Google account to get a key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 ## Security notes
 - Only logged-in users with editor permissions can generate (requires Elementor editor access).
