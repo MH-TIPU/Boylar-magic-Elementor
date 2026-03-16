@@ -10,7 +10,7 @@ class Boylar_Magic_AI_Generator_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return __( 'Magic AI Generator', 'boylar-magic-elementor' );
+		return __( 'Boylar Magic Elementor', 'boylar-magic-elementor' );
 	}
 
 	public function get_icon() {

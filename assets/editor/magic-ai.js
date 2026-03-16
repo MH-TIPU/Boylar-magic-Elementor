@@ -162,25 +162,40 @@
   }
 
   function bindWidgetButtons() {
-    // The widget renders inside the preview iframe; this script runs in editor context
-    // but is enqueued for the editor and can still bind on the document that includes the widget HTML.
-    function bindInDoc(doc) {
-      $(doc).on("click", ".boylar-magic-ai-widget .boylar-magic-ai-generate", function (e) {
-        e.preventDefault();
-        const $root = $(this).closest(".boylar-magic-ai-widget");
-        generateFromWidget($root);
-      });
+    // The main editor document
+    $(document).on("click", ".boylar-magic-ai-widget .boylar-magic-ai-generate", function (e) {
+      e.preventDefault();
+      const $root = $(this).closest(".boylar-magic-ai-widget");
+      generateFromWidget($root);
+    });
+
+    // We must bind to the iframe explicitly because elements are rendered inside it.
+    // Use elementor.channels.editor or window.elementor.hooks for better reliability
+    if (window.elementor && window.elementor.hooks) {
+        window.elementor.hooks.addAction('panel/open_editor/widget/boylar_magic_ai_generator', function( panel, model, view ) {
+            // Re-bind just in case, or bind directly to the preview contents if available
+            bindIframeEvents();
+        });
     }
 
-    // Main editor document
-    bindInDoc(document);
+    // Try an immediate bind as well
+    bindIframeEvents();
+  }
 
-    // Preview iframe (best-effort)
-    try {
-      if (elementor && elementor.$previewContents) {
-        bindInDoc(elementor.$previewContents[0]);
+  function bindIframeEvents() {
+      try {
+        if (elementor && elementor.$previewContents) {
+            // Unbind first to prevent multiple firings
+            elementor.$previewContents.find('body').off("click.boylarMagic")
+                                     .on("click.boylarMagic", ".boylar-magic-ai-widget .boylar-magic-ai-generate", function (e) {
+                e.preventDefault();
+                const $root = $(this).closest(".boylar-magic-ai-widget");
+                generateFromWidget($root);
+            });
+        }
+      } catch (e) {
+          console.error("Boylar Magic Elementor: Failed to bind iframe events", e);
       }
-    } catch (e) {}
   }
 
   function removeElementByIdBestEffort(elementId) {

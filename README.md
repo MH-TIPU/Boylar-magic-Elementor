@@ -28,7 +28,7 @@ Go to **WP Admin → Settings → Boylar magic Elementor**:
 
 ### Use in Elementor
 1. Open any page in **Elementor Editor**
-2. Find the widget: **Magic AI Generator** (in “General”)
+2. Find the widget: **Boylar Magic Elementor** (in “General”)
 3. Drag it into the page
 4. Enter a prompt (optional: select an image)
 5. Click **Generate Section**

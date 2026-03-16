@@ -52,7 +52,7 @@ This plugin supports **OpenAI-compatible** Chat Completions endpoints. You can u
 == How to use ==
 
 1. Open a page in the **Elementor Editor**
-2. Drag **Magic AI Generator** widget to the canvas
+2. Drag **Boylar Magic Elementor** widget to the canvas
 3. Enter a prompt (optional: select a reference image)
 4. Click **Generate Section**
 5. The plugin inserts a new section with native Elementor widgets
@@ -74,7 +74,7 @@ In WordPress options (Settings page). For best security you can define `BOYLAR_O
 
 == Screenshots ==
 
-1. Magic AI Generator widget in Elementor panel
+1. Boylar Magic Elementor widget in Elementor panel
 2. Prompt + optional reference image controls
 3. Generated section inserted and fully editable
 
